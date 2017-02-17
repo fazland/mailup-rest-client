@@ -1,2 +1,4 @@
-# mailup-rest-client
- Unofficial MailUp Rest Client
+MailUp Rest Client
+------------------
+
+Unofficial MailUp Rest Client
