@@ -1,8 +1,7 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Fazland\MailUpRestClient;
+
 /**
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  * @author Massimiliano Braglia <massimiliano.braglia@fazland.com>

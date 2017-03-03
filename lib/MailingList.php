@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Fazland\MailUpRestClient;
 
@@ -203,7 +201,7 @@ class MailingList extends Resource
     }
 
     /**
-     * @return array
+     * @return ListGroup[]
      */
     public function getGroups(): array
     {

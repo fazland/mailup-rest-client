@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Fazland\MailUpRestClient;
 
@@ -90,7 +88,7 @@ class ListGroup extends Resource
     /**
      * @param string $name
      *
-     * @return $this
+     * @return $this|self
      */
     public function setName(string $name): self
     {
@@ -110,7 +108,7 @@ class ListGroup extends Resource
     /**
      * @param string $notes
      *
-     * @return $this
+     * @return $this|self
      */
     public function setNotes(string $notes): self
     {
@@ -130,7 +128,7 @@ class ListGroup extends Resource
     /**
      * @param bool $deletable
      *
-     * @return $this
+     * @return $this|self
      */
     public function setDeletable(bool $deletable): self
     {

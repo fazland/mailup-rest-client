@@ -24,7 +24,7 @@ matrix:
   fast_finish: true
 
 before_script:
-  - composer install --prefer-dist $COMPOSER_FLAGS
+  - composer update --prefer-dist $COMPOSER_FLAGS
 
 script:
   - bin/phpunit $PHPUNIT_FLAGS

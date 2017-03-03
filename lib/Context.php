@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Fazland\MailUpRestClient;
 
@@ -114,8 +112,8 @@ class Context
      *
      * @internal
      *
-     * @param $path
-     * @param $method
+     * @param string $path
+     * @param string $method
      * @param array|null $params
      *
      * @return ResponseInterface

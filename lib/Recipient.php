@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Fazland\MailUpRestClient;
 
@@ -48,7 +46,7 @@ class Recipient extends Resource implements \JsonSerializable
      * @param string $email
      * @param string $mobilePhone
      * @param string $mobilePrefix
-     * @param array $fields
+     * @param DynamicField[] $fields
      */
     public function __construct(
         string $name,
@@ -67,7 +65,7 @@ class Recipient extends Resource implements \JsonSerializable
     /**
      * @param int $id
      *
-     * @return $this
+     * @return $this|self
      */
     public function setId(int $id): self
     {
@@ -117,7 +115,7 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return DynamicField[]
      */
     public function getFields(): array
     {
@@ -125,9 +123,9 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
-     * @param array $fields
+     * @param DynamicField[] $fields
      *
-     * @return $this
+     * @return $this|self
      */
     public function setFields(array $fields): self
     {
