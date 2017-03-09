@@ -131,7 +131,10 @@ class Context
 
         $response = $this->client->sendRequest($request);
         if (200 !== $response->getStatusCode()) {
-            throw new InvalidResponseException($response);
+            $responseBody = (string)$response->getBody();
+            $message = "Response not OK when requesting an access token. Response body: $responseBody";
+
+            throw new InvalidResponseException($response, $message);
         }
 
         return $response;
@@ -173,7 +176,10 @@ class Context
 
         $response = $this->client->sendRequest($request);
         if (200 !== $response->getStatusCode()) {
-            throw new InvalidResponseException($response, 'Response not OK when requesting an access token.');
+            $responseBody = (string)$response->getBody();
+            $message = "Response not OK when requesting an access token. Response body: $responseBody";
+
+            throw new InvalidResponseException($response, $message);
         }
 
         $this->token = Token\Token::fromResponse($response);
