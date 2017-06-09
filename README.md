@@ -110,8 +110,35 @@ $list->import($recipients);
 ```
 
 ### Groups
+Each `MailingList` can be split into multiple groups. The operations available are the following:
+- retrieve or modify its name:
+```php
+$group->getName();
+$group->setName('Gondor Army');
+```
+- retrieve or modify its notes:
+```php
+$group->getNotes();
+$group->setNotes('10.000 knights and 20.000 peons');
+```
+- prevent or allow deletion:
+```php
+$group->isDeletable();
+$group->setDeletable(true);
+```
+- delete:
+```php
+$group->delete();
+```
+- add, remove or retrieve the recipients:
+```php
+use Fazland\MailUpRestClient\Recipient;
 
-...
+$legolas = new Recipient('Legolas Thranduilion', 'legolas@lothlorien.elf', '3334444444', '+39');
+$group->addRecipient($legolas);
+$group->removeRecipient($legolas);
+$lothlorienCitizens = $group->getRecipients();
+```
 
 Contributing
 ------------
