@@ -219,6 +219,30 @@ class MailingList extends Resource
     }
 
     /**
+     * @param string $subscriptionStatus
+     *
+     * @return Recipient[]
+     */
+    public function getAllRecipients(string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED): array
+    {
+        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
+            throw new \InvalidArgumentException('Subscription status can be only one of [' . implode(', ', Recipient::SUBSCRIPTION_STATUSES) . "]!");
+        }
+
+        $response = $this->context->makeRequest("/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}", "GET");
+        $body = self::getJSON($response);
+
+        $items = $body['Items'];
+        $recipients = [];
+
+        foreach ($items as $item) {
+            $recipients[] = Recipient::fromResponseArray($item);
+        }
+
+        return $recipients;
+    }
+
+    /**
      * @param Context $context
      *
      * @return MailingList[]

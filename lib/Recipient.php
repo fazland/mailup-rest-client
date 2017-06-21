@@ -10,6 +10,16 @@ namespace Fazland\MailUpRestClient;
  */
 class Recipient extends Resource implements \JsonSerializable
 {
+    const STATUS_SUBSCRIBED = "Subscribed";
+    const STATUS_UNSUBSCRIBED = "Unsubscribed";
+    const STATUS_PENDING = "Pending";
+
+    const SUBSCRIPTION_STATUSES = [
+        self::STATUS_SUBSCRIBED,
+        self::STATUS_UNSUBSCRIBED,
+        self::STATUS_PENDING
+    ];
+
     /**
      * @var string
      */
@@ -44,15 +54,15 @@ class Recipient extends Resource implements \JsonSerializable
      * Recipient constructor.
      * @param string $name
      * @param string $email
-     * @param string $mobilePhone
-     * @param string $mobilePrefix
+     * @param null|string $mobilePhone
+     * @param null|string $mobilePrefix
      * @param DynamicField[] $fields
      */
     public function __construct(
         string $name,
         string $email,
-        string $mobilePhone,
-        string $mobilePrefix,
+        string $mobilePhone = null,
+        string $mobilePrefix = null,
         array $fields = []
     ) {
         $this->name = $name;
@@ -99,17 +109,17 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getMobileNumber(): string
+    public function getMobileNumber()
     {
         return $this->mobileNumber;
     }
 
     /**
-     * @return string
+     * @return null|string
      */
-    public function getMobilePrefix(): string
+    public function getMobilePrefix()
     {
         return $this->mobilePrefix;
     }
