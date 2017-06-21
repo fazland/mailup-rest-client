@@ -221,15 +221,50 @@ class MailingList extends Resource
     /**
      * @param string $subscriptionStatus
      *
-     * @return Recipient[]
+     * @return int
      */
-    public function getAllRecipients(string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED): array
+    public function countRecipients(string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED): int
     {
         if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
             throw new \InvalidArgumentException('Subscription status can be only one of [' . implode(', ', Recipient::SUBSCRIPTION_STATUSES) . "]!");
         }
 
-        $response = $this->context->makeRequest("/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}", "GET");
+        $response = $this->context->makeRequest(
+            "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}",
+            "GET"
+        );
+
+        $body = self::getJSON($response);
+
+        return $body['TotalElementsCount'] ?? 0;
+    }
+
+    /**
+     * @param int $pageNumber
+     * @param int $pageSize
+     * @param string $subscriptionStatus
+     *
+     * @return Recipient[]
+     */
+    public function getRecipientsPaginated(
+        int $pageNumber,
+        int $pageSize,
+        string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
+    ): array {
+        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
+            throw new \InvalidArgumentException('Subscription status can be only one of [' . implode(', ', Recipient::SUBSCRIPTION_STATUSES) . "]!");
+        }
+
+        $queryString = http_build_query([
+            'PageNumber' => $pageNumber,
+            'PageSize' => $pageSize,
+        ]);
+
+        $response = $this->context->makeRequest(
+            "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}?$queryString",
+            "GET"
+        );
+
         $body = self::getJSON($response);
 
         $items = $body['Items'];
