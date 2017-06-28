@@ -104,6 +104,18 @@ $recipient = $list->findRecipient('aragorn@gondor.com'); // null returned if cur
 ```php
 $groups = $list->getGroups();
 ```
+- count how many recipients are in the list (default is subscribed, but you can search for unsubscribed o pending statuses too):
+```php
+$countRecipients = $list->countRecipients(); // equal to $list->countRecipients(Recipient::STATUS_SUBSCRIBED);
+// OR
+$countRecipients = $list->countRecipients(Recipient::STATUS_UNSUBSCRIBED);
+// OR
+$countRecipients = $list->countRecipients(Recipient::STATUS_PENDING);
+```
+- get recipients paginated (you can specify the same status used in MailingList::countRecipients()):
+```php
+$recipients = $list->getRecipientsPaginated($pageNumber, $pageSize);
+```
 - least, but not last, import an array of `Recipient` objects:
 ```php
 $list->import($recipients);
