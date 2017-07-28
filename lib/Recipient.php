@@ -189,4 +189,22 @@ class Recipient extends Resource implements \JsonSerializable
 
         return $recipient;
     }
+
+    /**
+     * @param Context $context
+     *
+     * @return DynamicField[]
+     */
+    public static function getDynamicFields(Context $context): array
+    {
+        $response = $context->makeRequest('/ConsoleService.svc/Console/Recipient/DynamicFields', 'GET');
+        $body = self::getJSON($response);
+
+        $fields = [];
+        foreach ($body['Items'] as $item) {
+            $fields[] = DynamicField::fromResponseArray($item);
+        }
+
+        return $fields;
+    }
 }

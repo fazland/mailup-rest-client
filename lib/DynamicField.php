@@ -55,6 +55,20 @@ final class DynamicField implements \JsonSerializable
     }
 
     /**
+     * @param array $response
+     *
+     * @return DynamicField
+     */
+    public static function fromResponseArray(array $response): self
+    {
+        return new self(
+            $response['Description'],
+            '',
+            $response['Id']
+        );
+    }
+
+    /**
      * @inheritDoc
      */
     public function jsonSerialize(): array
