@@ -63,9 +63,9 @@ class ListGroup extends Resource
      * @param MailingList $list
      * @param array $response
      *
-     * @return ListGroup
+     * @return self
      */
-    public static function fromResponseArray(Context $context, MailingList $list, array $response)
+    public static function fromResponseArray(Context $context, MailingList $list, array $response): self
     {
         $group = new self($context, $list, $response['idGroup']);
         $group
