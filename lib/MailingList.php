@@ -180,14 +180,22 @@ class MailingList extends Resource
 
     /**
      * @param string $email
+     * @param string $subscriptionStatus
      *
      * @return Recipient|null
      */
-    public function findRecipient(string $email)
-    {
+    public function findRecipient(
+        string $email,
+        string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
+    ): Recipient {
+        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
+            $statuses = implode(', ', Recipient::SUBSCRIPTION_STATUSES);
+            throw new \InvalidArgumentException("Subscription status can be only one of [{$statuses}]!");
+        }
+
         $emailEncoded = urlencode($email);
         $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/{$this->id}/Recipients/Subscribed?filterby=\"Email.Contains(%27$emailEncoded%27)\"",
+            "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}?filterby=\"Email.Contains(%27{$emailEncoded}%27)\"",
             'GET'
         );
 
