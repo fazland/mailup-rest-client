@@ -136,13 +136,16 @@ class MailingList extends Resource
      * Subscribes the specified {@see Recipient} to current MailUp list.
      *
      * @param Recipient $recipient
+     * @param bool      $confirmByEmail    Enable Confirmed Opt-in
+     *                                     (required for resubscribing recipients)
      *
      * @return Recipient
      */
-    public function addRecipient(Recipient $recipient): Recipient
+    public function addRecipient(Recipient $recipient, bool $confirmByEmail = false): Recipient
     {
+        $queryString = $confirmByEmail ? '?ConfirmEmail=true' : '';
         $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/$this->id/Recipient",
+            "/ConsoleService.svc/Console/List/$this->id/Recipient{$queryString}",
             'POST',
             $recipient
         );

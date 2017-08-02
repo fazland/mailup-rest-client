@@ -158,13 +158,16 @@ class ListGroup extends Resource
      * Subscribes the specified {@see Recipient} to current MailUp group.
      *
      * @param Recipient $recipient
+     * @param bool      $confirmByEmail    Enable Confirmed Opt-in
+     *                                     (required for resubscribing recipients)
      *
      * @return Recipient
      */
-    public function addRecipient(Recipient $recipient)
+    public function addRecipient(Recipient $recipient, bool $confirmByEmail = false): Recipient
     {
+        $queryString = $confirmByEmail ? '?ConfirmEmail=true' : '';
         $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/Group/$this->id/Recipient",
+            "/ConsoleService.svc/Console/Group/$this->id/Recipient{$queryString}",
             'POST',
             $recipient
         );
@@ -194,7 +197,10 @@ class ListGroup extends Resource
      */
     public function getRecipients(): array
     {
-        $response = $this->context->makeRequest("ConsoleService.svc/Console/Group/{$this->id}/Recipient", 'GET');
+        $response = $this->context->makeRequest(
+            "ConsoleService.svc/Console/Group/{$this->id}/Recipient",
+            'GET'
+        );
 
         $body = self::getJSON($response);
 
