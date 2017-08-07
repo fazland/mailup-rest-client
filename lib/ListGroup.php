@@ -165,7 +165,9 @@ class ListGroup extends Resource
      */
     public function addRecipient(Recipient $recipient, bool $confirmByEmail = false): Recipient
     {
-        $queryString = $confirmByEmail ? '?ConfirmEmail=true' : '';
+        $queryString = http_build_query([
+            'ConfirmEmail' => var_export($confirmByEmail, true),
+        ]);
         $response = $this->context->makeRequest(
             "/ConsoleService.svc/Console/Group/$this->id/Recipient{$queryString}",
             'POST',
@@ -204,13 +206,12 @@ class ListGroup extends Resource
 
         $body = self::getJSON($response);
 
-        $items = $body['Items'];
-        if (! count($items)) {
+        if (! count($body['Items'])) {
             return null;
         }
 
         $recipients = [];
-        foreach ($items as $item) {
+        foreach ($body['Items'] as $item) {
             $recipients[] = Recipient::fromResponseArray($item);
         }
 

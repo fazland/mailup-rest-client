@@ -143,7 +143,10 @@ class MailingList extends Resource
      */
     public function addRecipient(Recipient $recipient, bool $confirmByEmail = false): Recipient
     {
-        $queryString = $confirmByEmail ? '?ConfirmEmail=true' : '';
+        $queryString = http_build_query([
+            'ConfirmEmail' => var_export($confirmByEmail, true),
+        ]);
+
         $response = $this->context->makeRequest(
             "/ConsoleService.svc/Console/List/$this->id/Recipient{$queryString}",
             'POST',
@@ -180,35 +183,49 @@ class MailingList extends Resource
 
     /**
      * @param string $email
-     * @param string $subscriptionStatus
+     * @param string $status
      *
      * @return Recipient|null
      */
     public function findRecipient(
         string $email,
-        string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
-    ): Recipient {
-        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
-            $statuses = implode(', ', Recipient::SUBSCRIPTION_STATUSES);
-            throw new \InvalidArgumentException("Subscription status can be only one of [{$statuses}]!");
+        string $status = Recipient::STATUS_SUBSCRIBED
+    ) {
+        if (
+               Recipient::STATUS_ANY !== $status
+            && ! in_array($status, Recipient::SUBSCRIPTION_STATUSES)
+        ) {
+            throw new \InvalidArgumentException(
+                "Subscription status should be ".
+                "'" . implode("', '", Recipient::SUBSCRIPTION_STATUSES) . "' ".
+                "or '" . Recipient::STATUS_ANY . "'."
+            );
         }
 
-        $emailEncoded = urlencode($email);
-        $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}?filterby=\"Email.Contains(%27{$emailEncoded}%27)\"",
-            'GET'
-        );
+        $statuses = Recipient::STATUS_ANY === $status
+                  ? Recipient::SUBSCRIPTION_STATUSES
+                  : [$status];
 
-        $body = self::getJSON($response);
+        $queryString = http_build_query([
+            'filterby' => '"Email.Contains(%27' . urlencode($email) . '%27)"',
+        ]);
 
-        $recipients = $body['Items'];
+        $recipients = [];
+        foreach ($statuses as $status) {
+            $path = "/ConsoleService.svc/Console/List/{$this->id}"
+                  . "/Recipients/{$status}"
+                  . "?{$queryString}";
+
+            $response   = $this->context->makeRequest($path, 'GET');
+            $body       = self::getJSON($response);
+            $recipients = array_merge($recipients, $body['Items']);
+        }
+
         if (! count($recipients)) {
             return null;
         }
 
-        $recipient = Recipient::fromResponseArray($recipients[0]);
-
-        return $recipient;
+        return Recipient::fromResponseArray($recipients[0]);
     }
 
     /**
@@ -219,70 +236,93 @@ class MailingList extends Resource
         $response = $this->context->makeRequest("/ConsoleService.svc/Console/List/{$this->id}/Groups", 'GET');
         $body = self::getJSON($response);
 
-        $items = $body['Items'];
         $groups = [];
-
-        foreach ($items as $item) {
             $groups[] = ListGroup::fromResponseArray($this->context, $this, $item);
+        foreach ($body['Items'] as $item) {
         }
 
         return $groups;
     }
 
     /**
-     * @param string $subscriptionStatus
+     * @param string $status
      *
      * @return int
      */
-    public function countRecipients(string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED): int
-    {
-        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
-            throw new \InvalidArgumentException('Subscription status can be only one of [' . implode(', ', Recipient::SUBSCRIPTION_STATUSES) . "]!");
+    public function countRecipients(
+        string $status = Recipient::STATUS_SUBSCRIBED
+    ): int {
+        if (
+               Recipient::STATUS_ANY !== $status
+            && ! in_array($status, Recipient::SUBSCRIPTION_STATUSES)
+        ) {
+            throw new \InvalidArgumentException(
+                "Subscription status should be ".
+                "'" . implode("', '", Recipient::SUBSCRIPTION_STATUSES) . "' ".
+                "or '" . Recipient::STATUS_ANY . "'."
+            );
         }
 
-        $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}",
-            "GET"
-        );
+        $statuses = Recipient::STATUS_ANY === $status
+                  ? Recipient::SUBSCRIPTION_STATUSES
+                  : [$status];
 
-        $body = self::getJSON($response);
+        $count = 0;
+        foreach ($statuses as $status) {
+            $path = "/ConsoleService.svc/Console/List/{$this->id}"
+                  . "/Recipients/{$status}";
 
-        return $body['TotalElementsCount'] ?? 0;
+            $response  = $this->context->makeRequest($path, 'GET');
+            $body      = self::getJSON($response);
+            $count    += $body['TotalElementsCount'] ?? 0;
+        }
+
+        return $count;
     }
 
     /**
      * @param int $pageNumber
      * @param int $pageSize
-     * @param string $subscriptionStatus
+     * @param string $status
      *
      * @return Recipient[]
      */
     public function getRecipientsPaginated(
         int $pageNumber,
         int $pageSize,
-        string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
+        string $status = Recipient::STATUS_SUBSCRIBED
     ): array {
-        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
-            throw new \InvalidArgumentException('Subscription status can be only one of [' . implode(', ', Recipient::SUBSCRIPTION_STATUSES) . "]!");
+        if (
+               Recipient::STATUS_ANY !== $status
+            && ! in_array($status, Recipient::SUBSCRIPTION_STATUSES)
+        ) {
+            throw new \InvalidArgumentException(
+                "Subscription status should be ".
+                "'" . implode("', '", Recipient::SUBSCRIPTION_STATUSES) . "' ".
+                "or '" . Recipient::STATUS_ANY . "'."
+            );
         }
+
+        $statuses = Recipient::STATUS_ANY === $status
+                  ? Recipient::SUBSCRIPTION_STATUSES
+                  : [$status];
 
         $queryString = http_build_query([
             'PageNumber' => $pageNumber,
             'PageSize' => $pageSize,
         ]);
 
-        $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}?$queryString",
-            "GET"
-        );
-
-        $body = self::getJSON($response);
-
-        $items = $body['Items'];
         $recipients = [];
+        foreach ($statuses as $status) {
+            $path = "/ConsoleService.svc/Console/List/{$this->id}"
+                  . "/Recipients/{$status}"
+                  . "?{$queryString}";
 
-        foreach ($items as $item) {
-            $recipients[] = Recipient::fromResponseArray($item);
+            $response = $this->context->makeRequest($path, 'GET');
+            $body     = self::getJSON($response);
+            foreach ($body['Items'] as $item) {
+                $recipients[] = Recipient::fromResponseArray($item);
+            }
         }
 
         return $recipients;
@@ -298,10 +338,8 @@ class MailingList extends Resource
         $response = $context->makeRequest('/ConsoleService.svc/Console/User/Lists', 'GET');
         $body = self::getJSON($response);
 
-        $items = $body['Items'];
-
         $lists = [];
-        foreach ($items as $item) {
+        foreach ($body['Items'] as $item) {
             $lists[] = self::fromResponseArray($context, $item);
         }
 
