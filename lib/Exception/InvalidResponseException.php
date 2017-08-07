@@ -16,8 +16,12 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
      */
     private $response;
 
-    public function __construct(ResponseInterface $response, $message = "", $code = 0, \Exception $previous = null)
-    {
+    public function __construct(
+        ResponseInterface $response,
+        $message = "",
+        $code = 0,
+        \Exception $previous = null
+    ) {
         $this->response = $response;
         parent::__construct($message, $code, $previous);
     }

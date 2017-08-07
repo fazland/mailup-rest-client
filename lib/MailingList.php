@@ -15,8 +15,8 @@ class MailingList extends Resource
     const OPTOUT_ONE_CLICK = 0;
     const OPTOUT_CONFIRMED = 1;
 
-    const SCOPE_NEWSLETTER = 'newsletters';
-    const SCOPE_MARKETING = 'Direct_Advertising';
+    const SCOPE_NEWSLETTER    = 'newsletters';
+    const SCOPE_MARKETING     = 'Direct_Advertising';
     const SCOPE_TRANSACTIONAL = 'Transactional';
 
     /**
@@ -65,8 +65,8 @@ class MailingList extends Resource
     private static function fromResponseArray(Context $context, array $response)
     {
         $list = new self($context);
-        $list->id = $response['idList'];
-        $list->name = $response['Name'];
+        $list->id          = $response['idList'];
+        $list->name        = $response['Name'];
         $list->companyName = $response['Company'];
         $list->description = $response['Description'];
 
@@ -124,10 +124,11 @@ class MailingList extends Resource
     public function import(array $recipients): int
     {
         $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/{$this->id}/Recipients",
-            'POST',
-            $recipients
-        );
+                        "/ConsoleService.svc/Console/List/{$this->id}".
+                        "/Recipients",
+                        'POST',
+                        $recipients
+                    );
 
         return self::getJSON($response);
     }
@@ -141,17 +142,21 @@ class MailingList extends Resource
      *
      * @return Recipient
      */
-    public function addRecipient(Recipient $recipient, bool $confirmByEmail = false): Recipient
-    {
+    public function addRecipient(
+        Recipient $recipient,
+        bool $confirmByEmail = false
+    ): Recipient {
         $queryString = http_build_query([
             'ConfirmEmail' => var_export($confirmByEmail, true),
         ]);
 
         $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/$this->id/Recipient{$queryString}",
-            'POST',
-            $recipient
-        );
+                        "/ConsoleService.svc/Console/List/{$this->id}".
+                        "/Recipient".
+                        "?{$queryString}",
+                        'POST',
+                        $recipient
+                    );
 
         $recipient->setId(self::getJSON($response));
 
@@ -166,7 +171,8 @@ class MailingList extends Resource
     public function removeRecipient(Recipient $recipient)
     {
         $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/$this->id/Unsubscribe/{$recipient->getId()}",
+            "/ConsoleService.svc/Console/List/{$this->id}".
+            "/Unsubscribe/{$recipient->getId()}",
             'DELETE'
         );
     }
@@ -178,7 +184,11 @@ class MailingList extends Resource
      */
     public function updateRecipient(Recipient $recipient)
     {
-        $this->context->makeRequest("/ConsoleService.svc/Console/Recipient/Detail", 'PUT', $recipient);
+        $this->context->makeRequest(
+            "/ConsoleService.svc/Console/Recipient/Detail",
+            'PUT',
+            $recipient
+        );
     }
 
     /**
@@ -233,12 +243,20 @@ class MailingList extends Resource
      */
     public function getGroups(): array
     {
-        $response = $this->context->makeRequest("/ConsoleService.svc/Console/List/{$this->id}/Groups", 'GET');
+        $response = $this->context->makeRequest(
+                        "/ConsoleService.svc/Console/List/{$this->id}".
+                        "/Groups",
+                        'GET'
+                    );
         $body = self::getJSON($response);
 
         $groups = [];
-            $groups[] = ListGroup::fromResponseArray($this->context, $this, $item);
         foreach ($body['Items'] as $item) {
+            $groups[] = ListGroup::fromResponseArray(
+                            $this->context,
+                            $this,
+                            $item
+                        );
         }
 
         return $groups;
@@ -309,7 +327,7 @@ class MailingList extends Resource
 
         $queryString = http_build_query([
             'PageNumber' => $pageNumber,
-            'PageSize' => $pageSize,
+            'PageSize'   => $pageSize,
         ]);
 
         $recipients = [];
@@ -335,7 +353,10 @@ class MailingList extends Resource
      */
     public static function getAll(Context $context): array
     {
-        $response = $context->makeRequest('/ConsoleService.svc/Console/User/Lists', 'GET');
+        $response = $context->makeRequest(
+            '/ConsoleService.svc/Console/User/Lists',
+            'GET'
+        );
         $body = self::getJSON($response);
 
         $lists = [];
@@ -354,49 +375,57 @@ class MailingList extends Resource
      *
      * @return MailingList
      */
-    public static function create(Context $context, string $name, string $ownerEmail, array $options = []): self
-    {
+    public static function create(
+        Context $context,
+        string $name,
+        string $ownerEmail,
+        array $options = []
+    ): self {
         $options = self::resolveCreateOptions($options);
         $params = array_filter([
-            'bouncedemail' => $options['bounced_emails_addr'],
-            'charset' => $options['charset'],
-            'default_prefix' => $options['phone_default_intl_prefix'],
-            'description' => $options['description'],
-            'disclaimer' => $options['disclaimer'],
-            'displayas' => $options['custom_to'],
-            'format' => $options['format'],
-            'frontendform' => $options['hosted_subscription_form'],
+            'bouncedemail'           => $options['bounced_emails_addr'],
+            'charset'                => $options['charset'],
+            'default_prefix'         => $options['phone_default_intl_prefix'],
+            'description'            => $options['description'],
+            'disclaimer'             => $options['disclaimer'],
+            'displayas'              => $options['custom_to'],
+            'format'                 => $options['format'],
+            'frontendform'           => $options['hosted_subscription_form'],
             'headerlistunsubscriber' => $options['list-unsubscribe_header'],
-            'headerxabuse' => $options['abuse_report_notice'],
-            'kbmax' => 100,
-            'multipart_text' => $options['auto_generate_text_part'],
-            'nl_sendername' => $options['sender_name'],
-            'notifyemail' => $options['unsubscribe_notification_email'],
-            'optout_type' => $options['optout_type'],
-            'owneremail' => $ownerEmail,
-            'public' => false,
-            'replyto' => $options['reply_to_addr'],
-            'sendconfirmsms' => $options['sms_on_subscription'],
-            'subscribedemail' => $options['email_on_subscription'],
-            'sendemailoptout' => $options['send_goodbye_mail'],
-            'tracking' => $options['enable_tracking'],
-            'Customer' => $options['is_customers_list'],
-            'business' => $options['is_business_list'],
-            'Name' => $name,
-            'copyTemplate' => false,
-            'copyWebhooks' => false,
-            'idSettings' => '',
-            'scope' => $options['scope'],
-            'useDefaultSettings' => true
+            'headerxabuse'           => $options['abuse_report_notice'],
+            'kbmax'                  => 100,
+            'multipart_text'         => $options['auto_generate_text_part'],
+            'nl_sendername'          => $options['sender_name'],
+            'notifyemail'            => $options['unsubscribe_notification_email'],
+            'optout_type'            => $options['optout_type'],
+            'owneremail'             => $ownerEmail,
+            'public'                 => false,
+            'replyto'                => $options['reply_to_addr'],
+            'sendconfirmsms'         => $options['sms_on_subscription'],
+            'subscribedemail'        => $options['email_on_subscription'],
+            'sendemailoptout'        => $options['send_goodbye_mail'],
+            'tracking'               => $options['enable_tracking'],
+            'Customer'               => $options['is_customers_list'],
+            'business'               => $options['is_business_list'],
+            'Name'                   => $name,
+            'copyTemplate'           => false,
+            'copyWebhooks'           => false,
+            'idSettings'             => '',
+            'scope'                  => $options['scope'],
+            'useDefaultSettings'     => true
         ], function ($element) {
             return null === $element;
         });
 
-        $response = $context->makeRequest('/ConsoleService.svc/Console/User/Lists', 'GET', $params);
+        $response = $context->makeRequest(
+            '/ConsoleService.svc/Console/User/Lists',
+            'GET',
+            $params
+        );
         $id = self::getJSON($response);
 
         $list = new self($context);
-        $list->id = $id;
+        $list->id   = $id;
         $list->name = $name;
 
         return $list;
@@ -411,28 +440,28 @@ class MailingList extends Resource
     {
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
-            'bounced_emails_addr' => null,
-            'charset' => 'UTF-8',
-            'phone_default_intl_prefix' => null,
-            'description' => null,
-            'disclaimer' => null,
-            'custom_to' => null,
-            'format' => 'html',
-            'hosted_subscription_form' => false,
-            'list-unsubscribe_header' => '<[listunsubscribe]>,<[mailto_uns]>',
-            'abuse_report_notice' => 'Please report abuse here: http://[host]/p',
-            'auto_generate_text_part' => true,
-            'sender_name' => null,
+            'bounced_emails_addr'            => null,
+            'charset'                        => 'UTF-8',
+            'phone_default_intl_prefix'      => null,
+            'description'                    => null,
+            'disclaimer'                     => null,
+            'custom_to'                      => null,
+            'format'                         => 'html',
+            'hosted_subscription_form'       => false,
+            'list-unsubscribe_header'        => '<[listunsubscribe]>,<[mailto_uns]>',
+            'abuse_report_notice'            => 'Please report abuse here: http://[host]/p',
+            'auto_generate_text_part'        => true,
+            'sender_name'                    => null,
             'unsubscribe_notification_email' => null,
-            'optout_type' => self::OPTOUT_ONE_CLICK,
-            'reply_to_addr' => null,
-            'sms_on_subscription' => false,
-            'email_on_subscription' => false,
-            'send_goodbye_mail' => false,
-            'enable_tracking' => true,
-            'is_customers_list' => true,
-            'is_business_list' => false,
-            'scope' => self::SCOPE_NEWSLETTER,
+            'optout_type'                    => self::OPTOUT_ONE_CLICK,
+            'reply_to_addr'                  => null,
+            'sms_on_subscription'            => false,
+            'email_on_subscription'          => false,
+            'send_goodbye_mail'              => false,
+            'enable_tracking'                => true,
+            'is_customers_list'              => true,
+            'is_business_list'               => false,
+            'scope'                          => self::SCOPE_NEWSLETTER,
         ]);
 
         return $resolver->resolve($options);

@@ -54,8 +54,8 @@ class ListGroup extends Resource
     public function __construct(Context $context, MailingList $list, int $id)
     {
         $this->context = $context;
-        $this->id = $id;
-        $this->list = $list;
+        $this->id      = $id;
+        $this->list    = $list;
     }
 
     /**
@@ -65,8 +65,11 @@ class ListGroup extends Resource
      *
      * @return self
      */
-    public static function fromResponseArray(Context $context, MailingList $list, array $response): self
-    {
+    public static function fromResponseArray(
+        Context $context,
+        MailingList $list,
+        array $response
+    ): self {
         $group = new self($context, $list, $response['idGroup']);
         $group
             ->setName($response['Name'])
@@ -145,11 +148,12 @@ class ListGroup extends Resource
     public function delete()
     {
         if (! $this->deletable) {
-            throw new CannotDeleteGroupException("$this->name group is not deletable");
+            throw new CannotDeleteGroupException("{$this->name} group is not deletable");
         }
 
         $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/{$this->list->getId()}/Group/{$this->id}",
+            "/ConsoleService.svc/Console/List/{$this->list->getId()}".
+            "/Group/{$this->id}",
             'DELETE'
         );
     }
@@ -163,16 +167,20 @@ class ListGroup extends Resource
      *
      * @return Recipient
      */
-    public function addRecipient(Recipient $recipient, bool $confirmByEmail = false): Recipient
-    {
+    public function addRecipient(
+        Recipient $recipient,
+        bool $confirmByEmail = false
+    ): Recipient {
         $queryString = http_build_query([
             'ConfirmEmail' => var_export($confirmByEmail, true),
         ]);
         $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/Group/$this->id/Recipient{$queryString}",
-            'POST',
-            $recipient
-        );
+                        "/ConsoleService.svc/Console/Group/{$this->id}".
+                        "/Recipient".
+                        "?{$queryString}",
+                        'POST',
+                        $recipient
+                    );
 
         $recipient->setId(self::getJSON($response));
 
@@ -187,7 +195,8 @@ class ListGroup extends Resource
     public function removeRecipient(Recipient $recipient)
     {
         $this->context->makeRequest(
-            "/ConsoleService.svc/Console/Group/$this->id/Unsubscribe/{$recipient->getId()}",
+            "/ConsoleService.svc/Console/Group/{$this->id}".
+            "/Unsubscribe/{$recipient->getId()}",
             'DELETE'
         );
     }
@@ -200,7 +209,8 @@ class ListGroup extends Resource
     public function getRecipients(): array
     {
         $response = $this->context->makeRequest(
-            "ConsoleService.svc/Console/Group/{$this->id}/Recipient",
+            "ConsoleService.svc/Console/Group/{$this->id}".
+            "/Recipient",
             'GET'
         );
 
