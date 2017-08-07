@@ -81,8 +81,11 @@ Once you have an instance of `MailingList`, you can do the following operations:
 - add a `Recipient`
 ```php
 use Fazland\MailUpRestClient\Recipient;
-
-$list->addRecipient(new Recipient('Aragorn', 'aragorn@gondor.com', '3333333333', '+39'));
+$recipient = new Recipient('Aragorn', 'aragorn@gondor.com', '3333333333', '+39');
+$list->addRecipient($recipient);
+// OR
+$confirmByEmail = true;
+$list->addRecipient($recipient, $confirmByEmail); // resubscribe an unsubscribed recipient (after *required* confirmation by email)
 ```
 - update a `Recipient`
 ```php
@@ -98,7 +101,13 @@ $list->removeRecipient(new Recipient('Aragorn', 'aragorn@gondor.com', '333333333
 ```
 - find a `Recipient` by its `email`
 ```php
-$recipient = $list->findRecipient('aragorn@gondor.com'); // null returned if current email was not found
+$recipient = $list->findRecipient('aragorn@gondor.com'); // null returned if current email was not found. Equal to $list->findRecipient('aragorn@gondor.com', Recipient::STATUS_SUBSCRIBED);
+// OR
+$list->findRecipient('aragorn@gondor.com', Recipient::STATUS_UNSUBSCRIBED);
+// OR
+$list->findRecipient('aragorn@gondor.com', Recipient::STATUS_PENDING);
+// OR
+$list->findRecipient('aragorn@gondor.com', Recipient::STATUS_ANY); // find by any of the statuses
 ```
 - retrieve all the groups of the current list:
 ```php
@@ -111,6 +120,8 @@ $countRecipients = $list->countRecipients(); // equal to $list->countRecipients(
 $countRecipients = $list->countRecipients(Recipient::STATUS_UNSUBSCRIBED);
 // OR
 $countRecipients = $list->countRecipients(Recipient::STATUS_PENDING);
+// OR
+$countRecipients = $list->countRecipients(Recipient::STATUS_ANY);
 ```
 - get recipients paginated (you can specify the same status used in MailingList::countRecipients()):
 ```php
