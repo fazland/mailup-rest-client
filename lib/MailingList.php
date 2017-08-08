@@ -310,20 +310,16 @@ class MailingList extends Resource
         int $pageSize,
         string $status = Recipient::STATUS_SUBSCRIBED
     ): array {
-        if (
-               Recipient::STATUS_ANY !== $status
-            && ! in_array($status, Recipient::SUBSCRIPTION_STATUSES)
-        ) {
+        if (! in_array($status, Recipient::SUBSCRIPTION_STATUSES)) {
+            $statuses = Recipient::SUBSCRIPTION_STATUSES;
+            $lastStatus = array_pop($statuses);
+
             throw new \InvalidArgumentException(
                 "Subscription status should be ".
-                "'" . implode("', '", Recipient::SUBSCRIPTION_STATUSES) . "' ".
-                "or '" . Recipient::STATUS_ANY . "'."
+                "'" . implode("', '", $statuses) . "' ".
+                "or '" . $lastStatus . "'."
             );
         }
-
-        $statuses = Recipient::STATUS_ANY === $status
-                  ? Recipient::SUBSCRIPTION_STATUSES
-                  : [$status];
 
         $queryString = http_build_query([
             'PageNumber' => $pageNumber,
@@ -331,7 +327,7 @@ class MailingList extends Resource
         ]);
 
         $recipients = [];
-        foreach ($statuses as $status) {
+        foreach (Recipient::SUBSCRIPTION_STATUSES as $status) {
             $path = "/ConsoleService.svc/Console/List/{$this->id}"
                   . "/Recipients/{$status}"
                   . "?{$queryString}";
