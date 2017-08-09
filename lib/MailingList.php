@@ -216,9 +216,8 @@ class MailingList extends Resource
                   ? Recipient::SUBSCRIPTION_STATUSES
                   : [$status];
 
-        $queryString = http_build_query([
-            'filterby' => '"Email.Contains(%27' . urlencode($email) . '%27)"',
-        ]);
+        $emailEncoded = urlencode($email);
+        $queryString  = "filterby=Email.Contains(%27{$emailEncoded}%27)";
 
         $recipients = [];
         foreach ($statuses as $status) {
