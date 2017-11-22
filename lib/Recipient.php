@@ -158,8 +158,8 @@ class Recipient extends Resource implements \JsonSerializable
         };
 
         $recipient = new self(
-            $response['Name'] ?? '',
-            $response['Email'] ?? '',
+            $response['Name'],
+            $response['Email'],
             $response['MobileNumber'],
             $response['MobilePrefix'],
             iterator_to_array($toFields($response['Fields']))
