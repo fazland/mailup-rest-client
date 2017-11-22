@@ -26,8 +26,8 @@ final class DynamicField implements \JsonSerializable
     public function __construct(string $fieldName, string $value, int $id)
     {
         $this->fieldName = $fieldName;
-        $this->value = $value;
-        $this->id = $id;
+        $this->value     = $value;
+        $this->id        = $id;
     }
 
     /**
@@ -75,8 +75,8 @@ final class DynamicField implements \JsonSerializable
     {
         return [
             'Description' => $this->fieldName,
-            'Id' => $this->id,
-            'Value' => $this->value,
+            'Id'          => $this->id,
+            'Value'       => $this->value,
         ];
     }
 }

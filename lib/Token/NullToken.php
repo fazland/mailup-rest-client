@@ -12,7 +12,7 @@ final class NullToken implements TokenInterface
     /**
      * @inheritDoc
      */
-    public function isValid() : bool
+    public function isValid(): bool
     {
         return false;
     }
@@ -20,7 +20,7 @@ final class NullToken implements TokenInterface
     /**
      * @inheritDoc
      */
-    public function shouldBeRefreshed() : bool
+    public function shouldBeRefreshed(): bool
     {
         return true;
     }
@@ -28,7 +28,7 @@ final class NullToken implements TokenInterface
     /**
      * @inheritDoc
      */
-    public function getAccessToken() : string
+    public function getAccessToken(): string
     {
         throw new \LogicException('Invalid call');
     }
@@ -36,7 +36,7 @@ final class NullToken implements TokenInterface
     /**
      * @inheritDoc
      */
-    public function getRefreshToken() : string
+    public function getRefreshToken(): string
     {
         throw new \LogicException('Invalid call');
     }

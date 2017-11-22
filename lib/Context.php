@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class Context
 {
     const AUTH_TOKEN_URI = 'https://services.mailup.com/Authorization/OAuth/Token';
-    const BASE_URI = 'https://services.mailup.com/API/v1.1/Rest';
+    const BASE_URI       = 'https://services.mailup.com/API/v1.1/Rest';
 
     /**
      * @var string
@@ -67,17 +67,18 @@ class Context
             $client = HttpClientDiscovery::find();
         }
 
-        $this->token = new Token\NullToken();
-        $this->client = $client;
+        $this->token          = new Token\NullToken();
+        $this->client         = $client;
         $this->messageFactory = MessageFactoryDiscovery::find();
 
         $options = $this->resolveOptions($options);
 
         $this->setCacheDir($options['cache_dir']);
-        $this->clientId = $options['client_id'];
+
+        $this->clientId     = $options['client_id'];
         $this->clientSecret = $options['client_secret'];
-        $this->username = $options['username'];
-        $this->password = $options['password'];
+        $this->username     = $options['username'];
+        $this->password     = $options['password'];
     }
 
     /**
@@ -92,7 +93,8 @@ class Context
     {
         $this->cacheDir = $cacheDir;
 
-        if (null !== $this->cacheDir && file_exists($fn = $this->cacheDir.DIRECTORY_SEPARATOR.'access_token.json')) {
+        $fn = $this->cacheDir . DIRECTORY_SEPARATOR . 'access_token.json';
+        if (null !== $this->cacheDir && file_exists($fn)) {
             if (false === $json = @file_get_contents($fn)) {
                 // Error
                 return;
@@ -120,19 +122,28 @@ class Context
      *
      * @throws InvalidResponseException
      */
-    public function makeRequest(string $path, string $method, $params = null): ResponseInterface
-    {
+    public function makeRequest(
+        string $path,
+        string $method,
+        $params = null
+    ): ResponseInterface {
         $this->refreshToken();
 
-        $request = $this->messageFactory->createRequest($method, self::BASE_URI.$path, [
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer '.$this->token->getAccessToken(),
-        ], json_encode($params));
+        $request = $this->messageFactory->createRequest(
+            $method,
+            self::BASE_URI.$path,
+            [
+                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer '.$this->token->getAccessToken(),
+            ],
+            json_encode($params)
+        );
 
         $response = $this->client->sendRequest($request);
         if (200 !== $response->getStatusCode()) {
-            $responseBody = (string)$response->getBody();
-            $message = "Response not OK when requesting an access token. Response body: $responseBody";
+            $responseBody = (string) $response->getBody();
+            $message = "Response not OK when requesting an access token. "
+                     . "Response body: {$responseBody}";
 
             throw new InvalidResponseException($response, $message);
         }
@@ -154,30 +165,36 @@ class Context
 
         if (! $this->token->isValid()) {
             $body = http_build_query([
-                'grant_type' => 'password',
-                'client_id' => $this->clientId,
+                'grant_type'    => 'password',
+                'client_id'     => $this->clientId,
                 'client_secret' => $this->clientSecret,
-                'username' => $this->username,
-                'password' => $this->password,
+                'username'      => $this->username,
+                'password'      => $this->password,
             ]);
         } else {
             $body = http_build_query([
-                'grant_type' => 'refresh_token',
-                'client_id' => $this->clientId,
+                'grant_type'    => 'refresh_token',
+                'client_id'     => $this->clientId,
                 'client_secret' => $this->clientSecret,
                 'refresh_token' => $this->token->getRefreshToken(),
             ]);
         }
 
-        $request = $this->messageFactory->createRequest('POST', self::AUTH_TOKEN_URI, [
-            'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Basic '.base64_encode($this->clientId.':'.$this->clientSecret),
-        ], $body);
+        $request = $this->messageFactory->createRequest(
+            'POST',
+            self::AUTH_TOKEN_URI,
+            [
+                'Content-Type'  => 'application/x-www-form-urlencoded',
+                'Authorization' => 'Basic '.base64_encode($this->clientId.':'.$this->clientSecret),
+            ],
+            $body
+        );
 
         $response = $this->client->sendRequest($request);
         if (200 !== $response->getStatusCode()) {
-            $responseBody = (string)$response->getBody();
-            $message = "Response not OK when requesting an access token. Response body: $responseBody";
+            $responseBody = (string) $response->getBody();
+            $message = "Response not OK when requesting an access token. "
+                     . "Response body: {$responseBody}";
 
             throw new InvalidResponseException($response, $message);
         }
@@ -196,7 +213,7 @@ class Context
             mkdir($this->cacheDir);
         }
 
-        $fn = $this->cacheDir.DIRECTORY_SEPARATOR.'access_token.json';
+        $fn = $this->cacheDir . DIRECTORY_SEPARATOR . 'access_token.json';
         file_put_contents($fn, json_encode($this->token));
     }
 

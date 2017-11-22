@@ -10,14 +10,15 @@ namespace Fazland\MailUpRestClient;
  */
 class Recipient extends Resource implements \JsonSerializable
 {
-    const STATUS_SUBSCRIBED = "Subscribed";
+    const STATUS_SUBSCRIBED   = "Subscribed";
     const STATUS_UNSUBSCRIBED = "Unsubscribed";
-    const STATUS_PENDING = "Pending";
+    const STATUS_PENDING      = "Pending";
+    const STATUS_ANY          = "Any";
 
     const SUBSCRIPTION_STATUSES = [
         self::STATUS_SUBSCRIBED,
         self::STATUS_UNSUBSCRIBED,
-        self::STATUS_PENDING
+        self::STATUS_PENDING,
     ];
 
     /**
@@ -52,6 +53,7 @@ class Recipient extends Resource implements \JsonSerializable
 
     /**
      * Recipient constructor.
+     *
      * @param string $name
      * @param string $email
      * @param null|string $mobilePhone
@@ -65,11 +67,11 @@ class Recipient extends Resource implements \JsonSerializable
         string $mobilePrefix = null,
         array $fields = []
     ) {
-        $this->name = $name;
-        $this->email = $email;
+        $this->name         = $name;
+        $this->email        = $email;
         $this->mobileNumber = $mobilePhone;
         $this->mobilePrefix = $mobilePrefix;
-        $this->fields = $fields;
+        $this->fields       = $fields;
     }
 
     /**
@@ -153,7 +155,11 @@ class Recipient extends Resource implements \JsonSerializable
     {
         $toFields = function (array $fields) {
             foreach ($fields as $field) {
-                yield new DynamicField($field['Description'], $field['Value'], $field['Id']);
+                yield new DynamicField(
+                    $field['Description'],
+                    $field['Value'],
+                    $field['Id']
+                );
             }
         };
 
@@ -176,11 +182,11 @@ class Recipient extends Resource implements \JsonSerializable
     public function jsonSerialize(): array
     {
         $recipient = [
-            'Name' => $this->name,
-            'Email' => $this->email,
+            'Name'         => $this->name,
+            'Email'        => $this->email,
             'MobileNumber' => $this->mobileNumber,
             'MobilePrefix' => $this->mobilePrefix,
-            'Fields' => $this->fields,
+            'Fields'       => $this->fields,
         ];
 
         if (null !== $this->id) {
@@ -197,7 +203,10 @@ class Recipient extends Resource implements \JsonSerializable
      */
     public static function getDynamicFields(Context $context): array
     {
-        $response = $context->makeRequest('/ConsoleService.svc/Console/Recipient/DynamicFields', 'GET');
+        $response = $context->makeRequest(
+            '/ConsoleService.svc/Console/Recipient/DynamicFields',
+            'GET'
+        );
         $body = self::getJSON($response);
 
         $fields = [];

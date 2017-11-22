@@ -27,10 +27,13 @@ final class Token implements TokenInterface
      */
     private $refreshToken;
 
-    public function __construct(string $accessToken, int $validUntilTimestamp, string $refreshToken)
-    {
-        $this->accessToken = $accessToken;
-        $this->validUntil = $validUntilTimestamp;
+    public function __construct(
+        string $accessToken,
+        int $validUntilTimestamp,
+        string $refreshToken
+    ) {
+        $this->accessToken  = $accessToken;
+        $this->validUntil   = $validUntilTimestamp;
         $this->refreshToken = $refreshToken;
     }
 
@@ -46,11 +49,18 @@ final class Token implements TokenInterface
     public static function fromJson(string $json): self
     {
         $object = @json_decode($json);
-        if (null === $object || ! isset($object->accessToken, $object->validUntil, $object->refreshToken)) {
+        if (
+               null === $object
+            || ! isset($object->accessToken, $object->validUntil, $object->refreshToken)
+        ) {
             throw new InvalidTokenException();
         }
 
-        $token = new self($object->accessToken, $object->validUntil, $object->refreshToken);
+        $token = new self(
+            $object->accessToken,
+            $object->validUntil,
+            $object->refreshToken
+        );
         if (! $token->isValid()) {
             throw new InvalidTokenException();
         }
@@ -69,13 +79,20 @@ final class Token implements TokenInterface
      */
     public static function fromResponse(ResponseInterface $response): self
     {
-        $json = (string)$response->getBody();
+        $json   = (string) $response->getBody();
         $object = @json_decode($json);
-        if (null === $object || ! isset($object->access_token, $object->expires_in, $object->refresh_token)) {
+        if (
+               null === $object
+            || ! isset($object->access_token, $object->expires_in, $object->refresh_token)
+        ) {
             throw new InvalidTokenException();
         }
 
-        $token = new self($object->access_token, time() + $object->expires_in, $object->refresh_token);
+        $token = new self(
+            $object->access_token,
+            time() + $object->expires_in,
+            $object->refresh_token
+        );
         return $token;
     }
 
@@ -117,8 +134,8 @@ final class Token implements TokenInterface
     public function jsonSerialize()
     {
         return [
-            'accessToken' => $this->accessToken,
-            'validUntil' => $this->validUntil,
+            'accessToken'  => $this->accessToken,
+            'validUntil'   => $this->validUntil,
             'refreshToken' => $this->refreshToken,
         ];
     }
