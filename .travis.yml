@@ -1,8 +1,5 @@
 language: php
 
-dist: trusty
-sudo: required
-
 cache:
     directories:
         - $HOME/.composer/cache
@@ -10,25 +7,20 @@ cache:
 php:
   - 7.0
   - 7.1
-  - hhvm
 
 matrix:
   include:
     - php: 7.0
-      env: PHPUNIT_FLAGS='--coverage-clover=coverage.clover'
-    - php: 7.0
       env: COMPOSER_FLAGS='--prefer-lowest'
     - php: 7.1
-  allow_failures:
-    - php: hhvm
   fast_finish: true
 
-before_script:
+before_install:
+  - composer self-update
   - composer update --prefer-dist $COMPOSER_FLAGS
 
-script:
-  - bin/phpunit $PHPUNIT_FLAGS
+script: if [[ "$TRAVIS_PHP_VERSION" == "7.0" && -z "$COMPOSER_FLAGS" ]]; then bin/phpunit --coverage-clover=coverage.clover; else bin/phpunit; fi
 
 after_script:
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - if [ "$TRAVIS_PHP_VERSION" == "7.0" && "$COMPOSER_FLAGS" != "" ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+    - wget https://scrutinizer-ci.com/ocular.phar
+    - if [ -f coverage.clover ]; then php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
