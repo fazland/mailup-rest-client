@@ -2,6 +2,8 @@
 
 namespace Fazland\MailUpRestClient;
 
+use Fazland\MailUpRestClient\Exception\MissingMandatoryFieldException;
+
 /**
  * MailUp's Recipient representation.
  *
@@ -53,19 +55,28 @@ class Recipient extends Resource implements \JsonSerializable
     /**
      * Recipient constructor.
      *
-     * @param string         $name
-     * @param string         $email
+     * @param null|string $name
+     * @param null|string $email
      * @param null|string    $mobilePhone
      * @param null|string    $mobilePrefix
      * @param DynamicField[] $fields
      */
     public function __construct(
-        string $name,
-        string $email,
+        string $name = null,
+        string $email = null,
         string $mobilePhone = null,
         string $mobilePrefix = null,
         array $fields = []
     ) {
+
+        if (null === $name) {
+            throw new MissingMandatoryFieldException("Cannot create Recipient. User with email $email misses mandatory field 'name'");
+        }
+
+        if (null === $email) {
+            throw new MissingMandatoryFieldException("Cannot create Recipient. User named $name misses mandatory field 'email'");
+        }
+
         $this->name = $name;
         $this->email = $email;
         $this->mobileNumber = $mobilePhone;

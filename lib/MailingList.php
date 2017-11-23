@@ -2,6 +2,7 @@
 
 namespace Fazland\MailUpRestClient;
 
+use Fazland\MailUpRestClient\Exception\ExceptionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -290,6 +291,27 @@ class MailingList extends Resource
         int $pageSize,
         string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
     ): array {
+
+        $results = $this->getRecipientsPaginatedManaged($pageNumber, $pageSize, $subscriptionStatus, false);
+
+        return $results;
+    }
+
+    /**
+     * @param int $pageNumber
+     * @param int $pageSize
+     * @param string $subscriptionStatus
+     * @param bool $catchExceptions
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getRecipientsPaginatedManaged(
+        int $pageNumber,
+        int $pageSize,
+        string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED,
+        bool $catchExceptions = false
+    ): array {
         if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
             throw new \InvalidArgumentException('Subscription status can be only one of ['.implode(', ', Recipient::SUBSCRIPTION_STATUSES).']!');
         }
@@ -310,7 +332,19 @@ class MailingList extends Resource
         $recipients = [];
 
         foreach ($items as $item) {
-            $recipients[] = Recipient::fromResponseArray($item);
+            $result = new Result();
+            try {
+                $recipient = Recipient::fromResponseArray($item);
+                $result->setRecipient($recipient);
+            } catch (ExceptionInterface $e) {
+                if (! $catchExceptions) {
+                    throw $e;
+                };
+
+                $result->setError($e->getMessage());
+            }
+
+            $recipients[] = $result;
         }
 
         return $recipients;
