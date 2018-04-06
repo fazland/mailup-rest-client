@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 abstract class Resource
 {
     /**
-     * Converts a JSON response body into an array
+     * Converts a JSON response body into an array.
      *
      * @param ResponseInterface $response
      *
@@ -18,7 +18,8 @@ abstract class Resource
      */
     public static function getJSON(ResponseInterface $response)
     {
-        $body = (string)$response->getBody();
+        $body = (string) $response->getBody();
+
         return json_decode($body, true);
     }
 }

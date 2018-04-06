@@ -3,21 +3,21 @@
 namespace Fazland\MailUpRestClient;
 
 /**
- * MailUp's Recipient representation
+ * MailUp's Recipient representation.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  * @author Massimiliano Braglia <massimiliano.braglia@fazland.com>
  */
 class Recipient extends Resource implements \JsonSerializable
 {
-    const STATUS_SUBSCRIBED = "Subscribed";
-    const STATUS_UNSUBSCRIBED = "Unsubscribed";
-    const STATUS_PENDING = "Pending";
+    const STATUS_SUBSCRIBED = 'Subscribed';
+    const STATUS_UNSUBSCRIBED = 'Unsubscribed';
+    const STATUS_PENDING = 'Pending';
 
     const SUBSCRIPTION_STATUSES = [
         self::STATUS_SUBSCRIBED,
         self::STATUS_UNSUBSCRIBED,
-        self::STATUS_PENDING
+        self::STATUS_PENDING,
     ];
 
     /**
@@ -52,10 +52,11 @@ class Recipient extends Resource implements \JsonSerializable
 
     /**
      * Recipient constructor.
-     * @param string $name
-     * @param string $email
-     * @param null|string $mobilePhone
-     * @param null|string $mobilePrefix
+     *
+     * @param string         $name
+     * @param string         $email
+     * @param null|string    $mobilePhone
+     * @param null|string    $mobilePrefix
      * @param DynamicField[] $fields
      */
     public function __construct(
@@ -73,6 +74,18 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Gets the id.
+     *
+     * @return int|null
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Sets the id.
+     *
      * @param int $id
      *
      * @return $this|self
@@ -85,14 +98,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
-     * @return int|null
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
+     * Gets the name.
+     *
      * @return string
      */
     public function getName(): string
@@ -101,6 +108,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Gets the email.
+     *
      * @return string
      */
     public function getEmail(): string
@@ -109,6 +118,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Gets the mobile number.
+     *
      * @return null|string
      */
     public function getMobileNumber()
@@ -117,6 +128,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Gets the mobile prefix.
+     *
      * @return null|string
      */
     public function getMobilePrefix()
@@ -125,6 +138,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Gets the dynamic fields.
+     *
      * @return DynamicField[]
      */
     public function getFields(): array
@@ -133,6 +148,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Sets the dynamic fields.
+     *
      * @param DynamicField[] $fields
      *
      * @return $this|self
@@ -145,6 +162,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Constructs a Recipient instance from a MailUp response array.
+     *
      * @param array $response
      *
      * @return Recipient
@@ -171,7 +190,7 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function jsonSerialize(): array
     {
@@ -191,6 +210,8 @@ class Recipient extends Resource implements \JsonSerializable
     }
 
     /**
+     * Gets the dynamic fields.
+     *
      * @param Context $context
      *
      * @return DynamicField[]

@@ -3,7 +3,7 @@
 namespace Fazland\MailUpRestClient\Exception;
 
 /**
- * Marker for MailUP exceptions
+ * Marker for MailUP exceptions.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  */

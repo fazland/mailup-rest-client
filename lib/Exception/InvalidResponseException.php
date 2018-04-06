@@ -5,7 +5,7 @@ namespace Fazland\MailUpRestClient\Exception;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Invalid response from MailUP
+ * Invalid response from MailUP.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  */
@@ -16,8 +16,20 @@ class InvalidResponseException extends \RuntimeException implements ExceptionInt
      */
     private $response;
 
-    public function __construct(ResponseInterface $response, $message = "", $code = 0, \Exception $previous = null)
-    {
+    /**
+     * InvalidResponseException constructor.
+     *
+     * @param ResponseInterface $response
+     * @param string            $message
+     * @param int               $code
+     * @param \Throwable|null   $previous
+     */
+    public function __construct(
+        ResponseInterface $response,
+        string $message = '',
+        int $code = 0,
+        \Throwable $previous = null
+    ) {
         $this->response = $response;
         parent::__construct($message, $code, $previous);
     }

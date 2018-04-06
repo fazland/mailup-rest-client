@@ -3,48 +3,48 @@
 namespace Fazland\MailUpRestClient\Token;
 
 /**
- * Always invalid token
+ * Always invalid token.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  */
 final class NullToken implements TokenInterface
 {
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function isValid() : bool
+    public function isValid(): bool
     {
         return false;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function shouldBeRefreshed() : bool
+    public function shouldBeRefreshed(): bool
     {
         return true;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function getAccessToken() : string
+    public function getAccessToken(): string
     {
         throw new \LogicException('Invalid call');
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function getRefreshToken() : string
+    public function getRefreshToken(): string
     {
         throw new \LogicException('Invalid call');
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [];
     }

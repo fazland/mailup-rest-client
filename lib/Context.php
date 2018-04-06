@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * MailUP request context (authentication, endpoints, etc)
+ * MailUP request context (authentication, endpoints, etc).
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  */
@@ -61,6 +61,12 @@ class Context
      */
     private $password;
 
+    /**
+     * Context constructor.
+     *
+     * @param array           $options
+     * @param HttpClient|null $client
+     */
     public function __construct(array $options = [], HttpClient $client = null)
     {
         if (null === $client) {
@@ -86,7 +92,7 @@ class Context
      *
      * @param string|null $cacheDir
      *
-     * @internal Access token JSON file will be saved here.
+     * @internal access token JSON file will be saved here
      */
     public function setCacheDir(string $cacheDir = null)
     {
@@ -112,8 +118,8 @@ class Context
      *
      * @internal
      *
-     * @param string $path
-     * @param string $method
+     * @param string     $path
+     * @param string     $method
      * @param array|null $params
      *
      * @return ResponseInterface
@@ -131,7 +137,7 @@ class Context
 
         $response = $this->client->sendRequest($request);
         if (200 !== $response->getStatusCode()) {
-            $responseBody = (string)$response->getBody();
+            $responseBody = (string) $response->getBody();
             $message = "Response not OK when requesting an access token. Response body: $responseBody";
 
             throw new InvalidResponseException($response, $message);
@@ -143,8 +149,6 @@ class Context
     /**
      * Ensures a valid token is present, requesting a new one if expired
      * or refreshing it if we are near to expiration time.
-     *
-     * @return void
      */
     private function refreshToken()
     {
@@ -176,7 +180,7 @@ class Context
 
         $response = $this->client->sendRequest($request);
         if (200 !== $response->getStatusCode()) {
-            $responseBody = (string)$response->getBody();
+            $responseBody = (string) $response->getBody();
             $message = "Response not OK when requesting an access token. Response body: $responseBody";
 
             throw new InvalidResponseException($response, $message);
@@ -186,6 +190,9 @@ class Context
         $this->saveToken();
     }
 
+    /**
+     * Saves the token into cache if a cache directory is set.
+     */
     private function saveToken()
     {
         if (null === $this->cacheDir) {
@@ -201,6 +208,8 @@ class Context
     }
 
     /**
+     * Resolves Context creation options.
+     *
      * @param array $options
      *
      * @return array

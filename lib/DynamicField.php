@@ -3,6 +3,8 @@
 namespace Fazland\MailUpRestClient;
 
 /**
+ * Represents the dynamic fields of a {@see Recipient}.
+ *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  * @author Massimiliano Braglia <massimiliano.braglia@fazland.com>
  */
@@ -23,6 +25,13 @@ final class DynamicField implements \JsonSerializable
      */
     private $id;
 
+    /**
+     * DynamicField constructor.
+     *
+     * @param string $fieldName
+     * @param string $value
+     * @param int    $id
+     */
     public function __construct(string $fieldName, string $value, int $id)
     {
         $this->fieldName = $fieldName;
@@ -31,6 +40,8 @@ final class DynamicField implements \JsonSerializable
     }
 
     /**
+     * Gets the id.
+     *
      * @return int
      */
     public function getId(): int
@@ -39,6 +50,8 @@ final class DynamicField implements \JsonSerializable
     }
 
     /**
+     * Gets the field name.
+     *
      * @return string
      */
     public function getFieldName(): string
@@ -47,6 +60,8 @@ final class DynamicField implements \JsonSerializable
     }
 
     /**
+     * Gets the field value.
+     *
      * @return string
      */
     public function getValue(): string
@@ -55,6 +70,8 @@ final class DynamicField implements \JsonSerializable
     }
 
     /**
+     * Constructs a DynamicField instance from a MailUp response array.
+     *
      * @param array $response
      *
      * @return DynamicField
@@ -69,7 +86,7 @@ final class DynamicField implements \JsonSerializable
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function jsonSerialize(): array
     {

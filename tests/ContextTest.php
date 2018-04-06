@@ -27,7 +27,7 @@ class ContextTest extends TestCase
     private $httpClient;
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function setUp()
     {
@@ -41,7 +41,7 @@ class ContextTest extends TestCase
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     protected function tearDown()
     {

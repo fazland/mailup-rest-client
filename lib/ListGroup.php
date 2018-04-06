@@ -5,7 +5,7 @@ namespace Fazland\MailUpRestClient;
 use Fazland\MailUpRestClient\Exception\CannotDeleteGroupException;
 
 /**
- * Group of users in a list
+ * Group of users in a list.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  * @author Massimiliano Braglia <massimiliano.braglia@fazland.com>
@@ -45,9 +45,9 @@ class ListGroup extends Resource
     /**
      * ListGroup constructor.
      *
-     * @param Context $context
+     * @param Context     $context
      * @param MailingList $list
-     * @param int $id
+     * @param int         $id
      *
      * @internal
      */
@@ -59,9 +59,9 @@ class ListGroup extends Resource
     }
 
     /**
-     * @param Context $context
+     * @param Context     $context
      * @param MailingList $list
-     * @param array $response
+     * @param array       $response
      *
      * @return ListGroup
      */
@@ -188,7 +188,7 @@ class ListGroup extends Resource
     }
 
     /**
-     * Gets the {@see Recipient} array
+     * Gets the {@see Recipient} array.
      *
      * @return array
      */

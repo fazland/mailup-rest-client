@@ -5,7 +5,7 @@ namespace Fazland\MailUpRestClient;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * MailUp users list
+ * MailUp users list.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  * @author Massimiliano Braglia <massimiliano.braglia@fazland.com>
@@ -46,8 +46,7 @@ class MailingList extends Resource
 
     /**
      * MailingList constructor.
-     * This is private as this object MUST be constructed
-     * using its static methods ONLY
+     * This is private as this object MUST be constructed using its static methods ONLY.
      *
      * @param Context $context
      */
@@ -57,8 +56,10 @@ class MailingList extends Resource
     }
 
     /**
+     * Constructs a MailingList instance from a MailUp response array.
+     *
      * @param Context $context
-     * @param array $response
+     * @param array   $response
      *
      * @return MailingList
      */
@@ -74,7 +75,7 @@ class MailingList extends Resource
     }
 
     /**
-     * Gets the list ID (if not new)
+     * Gets the list ID (if not new).
      *
      * @return int|null
      */
@@ -84,7 +85,7 @@ class MailingList extends Resource
     }
 
     /**
-     * Gets the list's name
+     * Gets the list's name.
      *
      * @return string
      */
@@ -94,7 +95,7 @@ class MailingList extends Resource
     }
 
     /**
-     * Gets the list's company name
+     * Gets the list's company name.
      *
      * @return string
      */
@@ -104,7 +105,7 @@ class MailingList extends Resource
     }
 
     /**
-     * Gets the list's description
+     * Gets the list's description.
      *
      * @return string
      */
@@ -133,7 +134,7 @@ class MailingList extends Resource
     }
 
     /**
-     * Subscribes the specified {@see Recipient} to current MailUp list.
+     * Adds (and subscribes) the specified {@see Recipient} to current MailUp list.
      *
      * @param Recipient $recipient
      *
@@ -153,11 +154,23 @@ class MailingList extends Resource
     }
 
     /**
-     * Unsubscribe the specified {@see Recipient} from current MailUp list.
+     * @deprecated use {@see MailingList::unsubscribeRecipient()} instead
      *
      * @param Recipient $recipient
      */
     public function removeRecipient(Recipient $recipient)
+    {
+        @trigger_error('The '.__METHOD__.' method is deprecated and will be removed in the first release. Use the unsubscribeRecipient() method instead.', E_USER_DEPRECATED);
+
+        $this->unsubscribeRecipient($recipient);
+    }
+
+    /**
+     * Unsubscribe the specified {@see Recipient} from current MailUp list.
+     *
+     * @param Recipient $recipient
+     */
+    public function unsubscribeRecipient(Recipient $recipient)
     {
         $this->context->makeRequest(
             "/ConsoleService.svc/Console/List/$this->id/Unsubscribe/{$recipient->getId()}",
@@ -166,16 +179,18 @@ class MailingList extends Resource
     }
 
     /**
-     * Updates MailUp's {@see Recipient}.
+     * Updates MailUp's {@see Recipient} fields with the ones contained in $recipient.
      *
      * @param Recipient $recipient
      */
     public function updateRecipient(Recipient $recipient)
     {
-        $this->context->makeRequest("/ConsoleService.svc/Console/Recipient/Detail", 'PUT', $recipient);
+        $this->context->makeRequest('/ConsoleService.svc/Console/Recipient/Detail', 'PUT', $recipient);
     }
 
     /**
+     * Finds a {@see Recipient} by its email. It returns null if the email could not be found.
+     *
      * @param string $email
      *
      * @return Recipient|null
@@ -201,6 +216,8 @@ class MailingList extends Resource
     }
 
     /**
+     * Gets the groups of the current list.
+     *
      * @return ListGroup[]
      */
     public function getGroups(): array
@@ -219,6 +236,8 @@ class MailingList extends Resource
     }
 
     /**
+     * Counts the recipient registered in the current list.
+     *
      * @param string $subscriptionStatus
      *
      * @return int
@@ -226,12 +245,12 @@ class MailingList extends Resource
     public function countRecipients(string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED): int
     {
         if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
-            throw new \InvalidArgumentException('Subscription status can be only one of [' . implode(', ', Recipient::SUBSCRIPTION_STATUSES) . "]!");
+            throw new \InvalidArgumentException('Subscription status can be only one of ['.implode(', ', Recipient::SUBSCRIPTION_STATUSES).']!');
         }
 
         $response = $this->context->makeRequest(
             "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}",
-            "GET"
+            'GET'
         );
 
         $body = self::getJSON($response);
@@ -240,8 +259,10 @@ class MailingList extends Resource
     }
 
     /**
-     * @param int $pageNumber
-     * @param int $pageSize
+     * Gets the list of the recipient paginated by the arguments.
+     *
+     * @param int    $pageNumber
+     * @param int    $pageSize
      * @param string $subscriptionStatus
      *
      * @return Recipient[]
@@ -252,7 +273,7 @@ class MailingList extends Resource
         string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
     ): array {
         if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
-            throw new \InvalidArgumentException('Subscription status can be only one of [' . implode(', ', Recipient::SUBSCRIPTION_STATUSES) . "]!");
+            throw new \InvalidArgumentException('Subscription status can be only one of ['.implode(', ', Recipient::SUBSCRIPTION_STATUSES).']!');
         }
 
         $queryString = http_build_query([
@@ -262,7 +283,7 @@ class MailingList extends Resource
 
         $response = $this->context->makeRequest(
             "/ConsoleService.svc/Console/List/{$this->id}/Recipients/{$subscriptionStatus}?$queryString",
-            "GET"
+            'GET'
         );
 
         $body = self::getJSON($response);
@@ -278,6 +299,8 @@ class MailingList extends Resource
     }
 
     /**
+     * Gets all MailingList objects contained in the current MailUp account.
+     *
      * @param Context $context
      *
      * @return MailingList[]
@@ -298,10 +321,12 @@ class MailingList extends Resource
     }
 
     /**
+     * Creates a MailingList.
+     *
      * @param Context $context
-     * @param string $name
-     * @param string $ownerEmail
-     * @param array $options
+     * @param string  $name
+     * @param string  $ownerEmail
+     * @param array   $options
      *
      * @return MailingList
      */
@@ -338,7 +363,7 @@ class MailingList extends Resource
             'copyWebhooks' => false,
             'idSettings' => '',
             'scope' => $options['scope'],
-            'useDefaultSettings' => true
+            'useDefaultSettings' => true,
         ], function ($element) {
             return null === $element;
         });
@@ -354,6 +379,8 @@ class MailingList extends Resource
     }
 
     /**
+     * Resolves MailingList creation options.
+     *
      * @param array $options
      *
      * @return array

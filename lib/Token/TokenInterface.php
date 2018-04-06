@@ -3,7 +3,7 @@
 namespace Fazland\MailUpRestClient\Token;
 
 /**
- * Represents the MailUP access/refresh token pair
+ * Represents the MailUP access/refresh token pair.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  */
@@ -17,7 +17,7 @@ interface TokenInterface extends \JsonSerializable
     public function isValid(): bool;
 
     /**
-     * Checks whether to refresh the token
+     * Checks whether to refresh the token.
      *
      * @return bool
      */
@@ -31,7 +31,7 @@ interface TokenInterface extends \JsonSerializable
     public function getAccessToken(): string;
 
     /**
-     * Gets the refresh token
+     * Gets the refresh token.
      *
      * @return string
      */
