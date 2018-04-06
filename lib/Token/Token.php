@@ -6,7 +6,7 @@ use Fazland\MailUpRestClient\Exception\InvalidTokenException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Access/Refresh token pair for OAuth authentication
+ * Access/Refresh token pair for OAuth authentication.
  *
  * @author Alessandro Chitolina <alessandro.chitolina@fazland.com>
  */
@@ -27,6 +27,13 @@ final class Token implements TokenInterface
      */
     private $refreshToken;
 
+    /**
+     * Token constructor.
+     *
+     * @param string $accessToken
+     * @param int    $validUntilTimestamp
+     * @param string $refreshToken
+     */
     public function __construct(string $accessToken, int $validUntilTimestamp, string $refreshToken)
     {
         $this->accessToken = $accessToken;
@@ -35,7 +42,7 @@ final class Token implements TokenInterface
     }
 
     /**
-     * Creates a token instance from JSON string
+     * Creates a token instance from JSON string.
      *
      * @param string $json
      *
@@ -59,7 +66,7 @@ final class Token implements TokenInterface
     }
 
     /**
-     * Creates a new instance from the server response
+     * Creates a new instance from the server response.
      *
      * @param ResponseInterface $response
      *
@@ -69,26 +76,27 @@ final class Token implements TokenInterface
      */
     public static function fromResponse(ResponseInterface $response): self
     {
-        $json = (string)$response->getBody();
+        $json = (string) $response->getBody();
         $object = @json_decode($json);
         if (null === $object || ! isset($object->access_token, $object->expires_in, $object->refresh_token)) {
             throw new InvalidTokenException();
         }
 
         $token = new self($object->access_token, time() + $object->expires_in, $object->refresh_token);
+
         return $token;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function isValid(): bool
     {
-        return $this->validUntil < time() + 30;
+        return $this->validUntil > time() + 30;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function shouldBeRefreshed(): bool
     {
@@ -96,7 +104,7 @@ final class Token implements TokenInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getAccessToken(): string
     {
@@ -104,7 +112,7 @@ final class Token implements TokenInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getRefreshToken(): string
     {
@@ -112,9 +120,9 @@ final class Token implements TokenInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'accessToken' => $this->accessToken,
