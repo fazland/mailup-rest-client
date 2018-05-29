@@ -119,13 +119,19 @@ class MailingList extends Resource
      * Returns the import ID.
      *
      * @param Recipient[] $recipients
+     * @param bool        $unsubscribe
      *
      * @return int
      */
-    public function import(array $recipients): int
+    public function import(array $recipients, bool $unsubscribe = false): int
     {
+        $resourceUrl = "/ConsoleService.svc/Console/List/{$this->id}/Recipients";
+        if ($unsubscribe) {
+            $resourceUrl .= '?'.http_build_query(['importType' => 'asOptout']);
+        }
+
         $response = $this->context->makeRequest(
-            "/ConsoleService.svc/Console/List/{$this->id}/Recipients",
+            $resourceUrl,
             'POST',
             $recipients
         );
