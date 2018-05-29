@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Fazland\MailUpRestClient;
-
 
 class ResultSet
 {
@@ -36,7 +35,7 @@ class ResultSet
      *
      * @return $this
      */
-    public function setResults(array $results): ResultSet
+    public function setResults(array $results): self
     {
         $this->results = $results;
 
@@ -56,7 +55,7 @@ class ResultSet
     /**
      * @return bool
      */
-    public function hasErrors():bool
+    public function hasErrors(): bool
     {
         return count($this->getErrors());
     }
@@ -66,9 +65,8 @@ class ResultSet
      */
     public function getValidResults(): array
     {
-        return $this->results->map(function($result) {
-           return ! $result->hasError();
+        return $this->results->map(function ($result) {
+            return ! $result->hasError();
         });
     }
-
 }

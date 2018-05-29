@@ -55,8 +55,8 @@ class Recipient extends Resource implements \JsonSerializable
     /**
      * Recipient constructor.
      *
-     * @param null|string $name
-     * @param null|string $email
+     * @param null|string    $name
+     * @param null|string    $email
      * @param null|string    $mobilePhone
      * @param null|string    $mobilePrefix
      * @param DynamicField[] $fields
@@ -68,7 +68,6 @@ class Recipient extends Resource implements \JsonSerializable
         string $mobilePrefix = null,
         array $fields = []
     ) {
-
         if (null === $name) {
             throw new MissingMandatoryFieldException("Cannot create Recipient. User with email $email misses mandatory field 'name'");
         }

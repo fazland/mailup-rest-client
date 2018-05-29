@@ -4,5 +4,4 @@ namespace Fazland\MailUpRestClient\Exception;
 
 class MissingMandatoryFieldException extends \InvalidArgumentException implements ExceptionInterface
 {
-
 }

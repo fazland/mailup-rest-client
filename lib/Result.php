@@ -1,7 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Fazland\MailUpRestClient;
-
 
 class Result
 {
@@ -19,12 +18,12 @@ class Result
      * Result constructor.
      *
      * @param null|Recipient $recipient
-     * @param null|string $error
+     * @param null|string    $error
      */
     public function __construct($recipient = null, $error = null)
     {
         $this->recipient = $recipient;
-        $this->error     = $error;
+        $this->error = $error;
     }
 
     /**
@@ -40,7 +39,7 @@ class Result
      *
      * @return $this
      */
-    public function setRecipient($recipient): Result
+    public function setRecipient($recipient): self
     {
         $this->recipient = $recipient;
 
@@ -60,7 +59,7 @@ class Result
      *
      * @return $this
      */
-    public function setError($error): Result
+    public function setError($error): self
     {
         $this->error = $error;
 

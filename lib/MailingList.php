@@ -291,19 +291,19 @@ class MailingList extends Resource
         int $pageSize,
         string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
     ): array {
-
         $results = $this->getRecipientsPaginatedManaged($pageNumber, $pageSize, $subscriptionStatus, false);
 
         return $results;
     }
 
     /**
-     * @param int $pageNumber
-     * @param int $pageSize
+     * @param int    $pageNumber
+     * @param int    $pageSize
      * @param string $subscriptionStatus
-     * @param bool $catchExceptions
+     * @param bool   $catchExceptions
      *
      * @return array
+     *
      * @throws \Exception
      */
     public function getRecipientsPaginatedManaged(
@@ -339,7 +339,7 @@ class MailingList extends Resource
             } catch (ExceptionInterface $e) {
                 if (! $catchExceptions) {
                     throw $e;
-                };
+                }
 
                 $result->setError($e->getMessage());
             }
