@@ -18,8 +18,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class Context
 {
-    const AUTH_TOKEN_URI = 'https://services.mailup.com/Authorization/OAuth/Token';
-    const BASE_URI = 'https://services.mailup.com/API/v1.1/Rest';
+    const HTTPS_AUTH_TOKEN_URI = 'https://services.mailup.com/Authorization/OAuth/Token';
+    const HTTPS_BASE_URI = 'https://services.mailup.com/API/v1.1/Rest';
+    const HTTP_AUTH_TOKEN_URI = 'http://services.mailup.com/Authorization/OAuth/Token';
+    const HTTP_BASE_URI = 'http://services.mailup.com/API/v1.1/Rest';
 
     /**
      * @var string
@@ -62,6 +64,11 @@ class Context
     private $password;
 
     /**
+     * @var bool
+     */
+    private $useHttps;
+
+    /**
      * Context constructor.
      *
      * @param array           $options
@@ -84,6 +91,7 @@ class Context
         $this->clientSecret = $options['client_secret'];
         $this->username = $options['username'];
         $this->password = $options['password'];
+        $this->useHttps = $options['use_https'];
     }
 
     /**
@@ -130,7 +138,8 @@ class Context
     {
         $this->refreshToken();
 
-        $request = $this->messageFactory->createRequest($method, self::BASE_URI.$path, [
+        $resourceUri = ($this->useHttps ? self::HTTPS_BASE_URI : self::HTTP_BASE_URI).$path;
+        $request = $this->messageFactory->createRequest($method, $resourceUri, [
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer '.$this->token->getAccessToken(),
         ], json_encode($params));
@@ -173,7 +182,8 @@ class Context
             ]);
         }
 
-        $request = $this->messageFactory->createRequest('POST', self::AUTH_TOKEN_URI, [
+        $resourceUri = $this->useHttps ? self::HTTPS_AUTH_TOKEN_URI : self::HTTP_AUTH_TOKEN_URI;
+        $request = $this->messageFactory->createRequest('POST', $resourceUri, [
             'Content-Type' => 'application/x-www-form-urlencoded',
             'Authorization' => 'Basic '.base64_encode($this->clientId.':'.$this->clientSecret),
         ], $body);
@@ -217,13 +227,20 @@ class Context
     private function resolveOptions(array $options): array
     {
         $resolver = new OptionsResolver();
-        $resolver->setDefault('cache_dir', null);
-        $resolver->setRequired([
-            'client_id',
-            'client_secret',
-            'username',
-            'password',
-        ]);
+
+        $resolver
+            ->setDefaults([
+                'cache_dir' => null,
+                'use_https' => true,
+            ])
+            ->setRequired([
+                'client_id',
+                'client_secret',
+                'username',
+                'password',
+            ])
+            ->setAllowedTypes('use_https', 'bool')
+        ;
 
         return $resolver->resolve($options);
     }
