@@ -120,14 +120,26 @@ class MailingList extends Resource
      *
      * @param Recipient[] $recipients
      * @param bool        $unsubscribe
+     * @param bool        $ignoreMobile
      *
      * @return int
      */
-    public function import(array $recipients, bool $unsubscribe = false): int
+    public function import(array $recipients, bool $unsubscribe = false, bool $ignoreMobile = false): int
     {
         $resourceUrl = "/ConsoleService.svc/Console/List/{$this->id}/Recipients";
+
+        $params = [];
+
         if ($unsubscribe) {
-            $resourceUrl .= '?'.http_build_query(['importType' => 'asOptout']);
+            $params['importType'] = 'asOptout';
+        }
+
+        if ($ignoreMobile) {
+            $params['ignoreMobile'] = 'true';
+        }
+
+        if (0 < count($params)) {
+            $resourceUrl .= '?'.http_build_query($params);
         }
 
         $response = $this->context->makeRequest(
