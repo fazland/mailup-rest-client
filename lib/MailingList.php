@@ -342,13 +342,13 @@ class MailingList extends Resource
      * Creates a MailingList.
      *
      * @param Context $context
-     * @param string  $name
-     * @param string  $ownerEmail
-     * @param array   $options
+     * @param string $listName
+     * @param string $ownerEmail
+     * @param array $options
      *
      * @return MailingList
      */
-    public static function create(Context $context, string $name, string $ownerEmail, array $options = []): self
+    public static function create(Context $context, string $listName, string $ownerEmail, array $options = []): self
     {
         $options = self::resolveCreateOptions($options);
         $params = array_filter([
@@ -376,7 +376,7 @@ class MailingList extends Resource
             'tracking' => $options['enable_tracking'],
             'Customer' => $options['is_customers_list'],
             'business' => $options['is_business_list'],
-            'Name' => $name,
+            'Name' => $listName,
             'copyTemplate' => false,
             'copyWebhooks' => false,
             'idSettings' => '',
@@ -391,7 +391,7 @@ class MailingList extends Resource
 
         $list = new self($context);
         $list->id = $id;
-        $list->name = $name;
+        $list->name = $listName;
 
         return $list;
     }

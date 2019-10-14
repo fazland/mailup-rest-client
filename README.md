@@ -62,12 +62,12 @@ To create a `MailingList` you can follow this example. Please, refer to the [Mai
 use Fazland\MailUpRestClient\MailingList;
 
 $email = "owner_of_the_list@email.com";
-$name = "owner_name";
+$list_name = "list_name";
 $params = [
     // your params...
 ];
 
-$list = MailingList::create($context, $name, $email, $params);
+$list = MailingList::create($context, $list_name, $email, $params);
 ```
 
 You can also obtain all the existing lists in your MailUp account by calling the static method `MailingList::getAll()`:
