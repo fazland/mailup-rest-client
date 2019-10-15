@@ -199,7 +199,7 @@ class ListGroup extends Resource
         $body = self::getJSON($response);
 
         $items = $body['Items'];
-        if (! count($items)) {
+        if (! \count($items)) {
             return null;
         }
 

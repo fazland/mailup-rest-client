@@ -63,8 +63,8 @@ class ContextTest extends TestCase
 
         $this->context->setCacheDir('/tmp/cache');
 
-        $this->assertCount(1, $mock->getInvocations());
-        $this->assertEquals(
+        self::assertCount(1, $mock->getInvocations());
+        self::assertEquals(
             '/tmp/cache'.DIRECTORY_SEPARATOR.'access_token.json',
             $mock->getInvocations()[0]->getArguments()[0]
         );
@@ -76,7 +76,8 @@ class ContextTest extends TestCase
         $mock = $builder->setNamespace('Fazland\MailUpRestClient')
             ->setName('file_exists')
             ->setFunctionProvider(new FixedValueFunction(true))
-            ->build();
+            ->build()
+        ;
         $mock->enable();
 
         $spy = new Spy('Fazland\MailUpRestClient', 'file_get_contents', (new FixedValueFunction('{}'))->getCallable());
@@ -84,6 +85,6 @@ class ContextTest extends TestCase
 
         $this->context->setCacheDir('/tmp/cache');
 
-        $this->assertCount(1, $spy->getInvocations());
+        self::assertCount(1, $spy->getInvocations());
     }
 }

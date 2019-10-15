@@ -20,6 +20,6 @@ abstract class Resource
     {
         $body = (string) $response->getBody();
 
-        return json_decode($body, true);
+        return \json_decode($body, true);
     }
 }

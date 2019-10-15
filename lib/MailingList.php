@@ -138,8 +138,8 @@ class MailingList extends Resource
             $params['ignoreMobile'] = 'true';
         }
 
-        if (0 < count($params)) {
-            $resourceUrl .= '?'.http_build_query($params);
+        if (0 < \count($params)) {
+            $resourceUrl .= '?'.\http_build_query($params);
         }
 
         $response = $this->context->makeRequest(
@@ -178,7 +178,7 @@ class MailingList extends Resource
      */
     public function removeRecipient(Recipient $recipient)
     {
-        @trigger_error('The '.__METHOD__.' method is deprecated and will be removed in the first release. Use the unsubscribeRecipient() method instead.', E_USER_DEPRECATED);
+        @\trigger_error('The '.__METHOD__.' method is deprecated and will be removed in the first release. Use the unsubscribeRecipient() method instead.', E_USER_DEPRECATED);
 
         $this->unsubscribeRecipient($recipient);
     }
@@ -215,7 +215,7 @@ class MailingList extends Resource
      */
     public function findRecipient(string $email)
     {
-        $emailEncoded = urlencode($email);
+        $emailEncoded = \urlencode($email);
         $response = $this->context->makeRequest(
             "/ConsoleService.svc/Console/List/{$this->id}/Recipients/Subscribed?filterby=\"Email.Contains(%27$emailEncoded%27)\"",
             'GET'
@@ -224,7 +224,7 @@ class MailingList extends Resource
         $body = self::getJSON($response);
 
         $recipients = $body['Items'];
-        if (! count($recipients)) {
+        if (! \count($recipients)) {
             return null;
         }
 
@@ -262,8 +262,8 @@ class MailingList extends Resource
      */
     public function countRecipients(string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED): int
     {
-        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
-            throw new \InvalidArgumentException('Subscription status can be only one of ['.implode(', ', Recipient::SUBSCRIPTION_STATUSES).']!');
+        if (! \in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
+            throw new \InvalidArgumentException('Subscription status can be only one of ['.\implode(', ', Recipient::SUBSCRIPTION_STATUSES).']!');
         }
 
         $response = $this->context->makeRequest(
@@ -290,11 +290,11 @@ class MailingList extends Resource
         int $pageSize,
         string $subscriptionStatus = Recipient::STATUS_SUBSCRIBED
     ): array {
-        if (! in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
-            throw new \InvalidArgumentException('Subscription status can be only one of ['.implode(', ', Recipient::SUBSCRIPTION_STATUSES).']!');
+        if (! \in_array($subscriptionStatus, Recipient::SUBSCRIPTION_STATUSES)) {
+            throw new \InvalidArgumentException('Subscription status can be only one of ['.\implode(', ', Recipient::SUBSCRIPTION_STATUSES).']!');
         }
 
-        $queryString = http_build_query([
+        $queryString = \http_build_query([
             'PageNumber' => $pageNumber,
             'PageSize' => $pageSize,
         ]);
@@ -342,16 +342,16 @@ class MailingList extends Resource
      * Creates a MailingList.
      *
      * @param Context $context
-     * @param string $listName
-     * @param string $ownerEmail
-     * @param array $options
+     * @param string  $name
+     * @param string  $ownerEmail
+     * @param array   $options
      *
      * @return MailingList
      */
-    public static function create(Context $context, string $listName, string $ownerEmail, array $options = []): self
+    public static function create(Context $context, string $name, string $ownerEmail, array $options = []): self
     {
         $options = self::resolveCreateOptions($options);
-        $params = array_filter([
+        $params = \array_filter([
             'bouncedemail' => $options['bounced_emails_addr'],
             'charset' => $options['charset'],
             'default_prefix' => $options['phone_default_intl_prefix'],
@@ -376,7 +376,7 @@ class MailingList extends Resource
             'tracking' => $options['enable_tracking'],
             'Customer' => $options['is_customers_list'],
             'business' => $options['is_business_list'],
-            'Name' => $listName,
+            'Name' => $name,
             'copyTemplate' => false,
             'copyWebhooks' => false,
             'idSettings' => '',
@@ -391,7 +391,7 @@ class MailingList extends Resource
 
         $list = new self($context);
         $list->id = $id;
-        $list->name = $listName;
+        $list->name = $name;
 
         return $list;
     }

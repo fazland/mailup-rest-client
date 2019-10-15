@@ -52,7 +52,7 @@ final class Token implements TokenInterface
      */
     public static function fromJson(string $json): self
     {
-        $object = @json_decode($json);
+        $object = @\json_decode($json);
         if (null === $object || ! isset($object->accessToken, $object->validUntil, $object->refreshToken)) {
             throw new InvalidTokenException();
         }
@@ -77,12 +77,12 @@ final class Token implements TokenInterface
     public static function fromResponse(ResponseInterface $response): self
     {
         $json = (string) $response->getBody();
-        $object = @json_decode($json);
+        $object = @\json_decode($json);
         if (null === $object || ! isset($object->access_token, $object->expires_in, $object->refresh_token)) {
             throw new InvalidTokenException();
         }
 
-        $token = new self($object->access_token, time() + $object->expires_in, $object->refresh_token);
+        $token = new self($object->access_token, \time() + $object->expires_in, $object->refresh_token);
 
         return $token;
     }
@@ -92,7 +92,7 @@ final class Token implements TokenInterface
      */
     public function isValid(): bool
     {
-        return $this->validUntil > time() + 30;
+        return $this->validUntil > \time() + 30;
     }
 
     /**
@@ -100,7 +100,7 @@ final class Token implements TokenInterface
      */
     public function shouldBeRefreshed(): bool
     {
-        return $this->validUntil < time() + 180;
+        return $this->validUntil < \time() + 180;
     }
 
     /**

@@ -55,8 +55,8 @@ class Recipient extends Resource implements \JsonSerializable
      *
      * @param string         $name
      * @param string         $email
-     * @param null|string    $mobilePhone
-     * @param null|string    $mobilePrefix
+     * @param string|null    $mobilePhone
+     * @param string|null    $mobilePrefix
      * @param DynamicField[] $fields
      */
     public function __construct(
@@ -120,7 +120,7 @@ class Recipient extends Resource implements \JsonSerializable
     /**
      * Gets the mobile number.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getMobileNumber()
     {
@@ -130,7 +130,7 @@ class Recipient extends Resource implements \JsonSerializable
     /**
      * Gets the mobile prefix.
      *
-     * @return null|string
+     * @return string|null
      */
     public function getMobilePrefix()
     {
@@ -181,7 +181,7 @@ class Recipient extends Resource implements \JsonSerializable
             $response['Email'],
             $response['MobileNumber'],
             $response['MobilePrefix'],
-            iterator_to_array($toFields($response['Fields']))
+            \iterator_to_array($toFields($response['Fields']))
         );
 
         $recipient->setId($response['idRecipient']);

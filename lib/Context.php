@@ -133,7 +133,7 @@ class Context
         $request = $this->messageFactory->createRequest($method, self::BASE_URI.$path, [
             'Content-Type' => 'application/json',
             'Authorization' => 'Bearer '.$this->token->getAccessToken(),
-        ], json_encode($params));
+        ], \json_encode($params));
 
         $response = $this->client->sendRequest($request);
         if (200 !== $response->getStatusCode()) {
@@ -157,7 +157,7 @@ class Context
         }
 
         if (! $this->token->isValid()) {
-            $body = http_build_query([
+            $body = \http_build_query([
                 'grant_type' => 'password',
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,
@@ -165,7 +165,7 @@ class Context
                 'password' => $this->password,
             ]);
         } else {
-            $body = http_build_query([
+            $body = \http_build_query([
                 'grant_type' => 'refresh_token',
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,
@@ -175,7 +175,7 @@ class Context
 
         $request = $this->messageFactory->createRequest('POST', self::AUTH_TOKEN_URI, [
             'Content-Type' => 'application/x-www-form-urlencoded',
-            'Authorization' => 'Basic '.base64_encode($this->clientId.':'.$this->clientSecret),
+            'Authorization' => 'Basic '.\base64_encode($this->clientId.':'.$this->clientSecret),
         ], $body);
 
         $response = $this->client->sendRequest($request);
@@ -199,12 +199,12 @@ class Context
             return;
         }
 
-        if (! is_dir($this->cacheDir)) {
-            mkdir($this->cacheDir);
+        if (! \is_dir($this->cacheDir)) {
+            \mkdir($this->cacheDir);
         }
 
         $fn = $this->cacheDir.DIRECTORY_SEPARATOR.'access_token.json';
-        file_put_contents($fn, json_encode($this->token));
+        \file_put_contents($fn, \json_encode($this->token));
     }
 
     /**
